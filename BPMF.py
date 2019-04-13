@@ -1,6 +1,7 @@
 import random
 from math import exp,sqrt
 import numpy
+from scipy.stats import chi2
 
 def get_int(l):
 
@@ -31,6 +32,7 @@ def get_dictionary(dat):
     for item in dat:
         key = (item[0],item[1])
         value = item[2]
+        value = (value-1)/float(4)
         data_dict[key] = value
     return (data_dict)
 
@@ -52,6 +54,20 @@ def init_UV(data,d=10):
         mid[unique_movie_ids[j]] = j
     return (U,V,uid,mid)
 
+def wishartrand(nu,phi):
+
+    dim = phi.shape[0]
+    chol = numpy.linalg.cholesky(phi)
+    foo = numpy.zeros((dim,dim))
+    
+    for i in range(dim):
+        for j in range(i+1):
+            if i == j:
+                foo[i,j] = numpy.sqrt(chi2.rvs(nu-(i+1)+1))
+            else:
+                foo[i,j]  = numpy.random.normal(0,1)
+    return numpy.dot(chol, numpy.dot(foo, numpy.dot(foo.T, chol.T)))
+
 def compute_V_var(V):
     
     variance_matrix = []
@@ -59,7 +75,8 @@ def compute_V_var(V):
     for item in V:
         var = [[0 for i in range(cols)] for i in range(cols)]
         for i in range(cols):
-            var[i][i] = 0.001
+            var[i][i] = 0.0001
+        var = wishartrand(cols,numpy.array(var))
         variance_matrix.append(var)
     return (variance_matrix)
 
@@ -70,7 +87,8 @@ def compute_U_var(U):
     for item in U:
         var = [[0 for i in range(cols)] for i in range(cols)]
         for i in range(cols):
-            var[i][i] = 0.001
+            var[i][i] = 0.0001
+        var = wishartrand(cols,numpy.array(var))
         variance_matrix.append(var)
     return (variance_matrix)
 
