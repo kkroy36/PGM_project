@@ -32,7 +32,7 @@ def get_dictionary(dat):
     for item in dat:
         key = (item[0],item[1])
         value = item[2]
-        value = (value-1)/float(4)
+        #value = (value-1)/float(4)
         data_dict[key] = value
     return (data_dict)
 
